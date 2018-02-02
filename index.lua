@@ -10,8 +10,10 @@ local color_gray_thin = Color.new(64,64,64)
 local color_gray_fat = Color.new(128,128,128)
 local Touch_x,Touch_y,Touch_c,Touch_z
 local Center_x,Center_y = Screen_x+Screen_size_x/2,Screen_y+Screen_size_y/2
-local Move_speed = 2.5
+local Move_speed,Resize_speed = 2.5,0.1
 local Stick_right_x, Stick_right_y = Controls.readRightAnalog()
+local Stick_left_x, Stick_left_y = Controls.readLeftAnalog()
+local Zoom_min = 12
 local Size_x,Size_y = 25, 25
 local Left_x,Right_x = (Screen_x - Center_x)/Size_x, (Screen_x + Screen_size_x - Center_x)/Size_x
 local Up_y,Down_y = (Screen_y + Screen_size_y - Center_y)/Size_y,(Screen_y - Center_y)/Size_y
@@ -54,6 +56,13 @@ local function Move_CooLines()
 		Update_XY()
 	end
 end
+local function Rescale_GphX()
+	if math.abs(Stick_left_y-128)>20 and Size_x-(math.ceil((Stick_left_y-128)/64)*Resize_speed)>Zoom_min and Size_y - (math.ceil((Stick_left_y-128)/64)*Resize_speed)>Zoom_min then
+		Size_x = Size_x - (math.ceil((Stick_left_y-128)/64)*Resize_speed)
+		Size_y = Size_y - (math.ceil((Stick_left_y-128)/64)*Resize_speed)
+		Update_XY()
+	end
+end
 local function Grid()
 	for i=0,math.floor(Right_x-Left_x)+1 do
 		if (math.floor(Left_x)+i)%5 == 0 then
@@ -75,6 +84,7 @@ Update_XY()
 while true do
 	Touch_x,Touch_y,Touch_c,Touch_z = Controls.readTouch()
 	Stick_right_x, Stick_right_y = Controls.readRightAnalog()
+	Stick_left_x, Stick_left_y = Controls.readLeftAnalog()
 	pad = Controls.read()
 	Graphics.initBlend()
 	Screen.clear(color_background)
@@ -89,6 +99,7 @@ while true do
 	Graphics.fillRect(Screen_x+Screen_size_x,960,0,544,color_black)
 	Graphics.termBlend()
 	Move_CooLines()
+	Rescale_GphX()
 	if Controls.check(pad, SCE_CTRL_SELECT) then 
 		FTP = FTP + 1	
 	end
