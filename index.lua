@@ -80,6 +80,10 @@ local function Grid()
 		
 	end
 end
+local function JumpTo(x, y)
+	local y = y or Y_make(x)
+	Center_x,Center_y=(Screen_x+Screen_size_x/2+x*Size_x),(Screen_y+Screen_size_y/2-y*Size_y)
+end
 Update_XY()
 while true do
 	Touch_x,Touch_y,Touch_c,Touch_z = Controls.readTouch()
@@ -100,6 +104,10 @@ while true do
 	Graphics.termBlend()
 	Move_CooLines()
 	Rescale_GphX()
+	if Controls.check(pad, SCE_CTRL_CROSS) and not Controls.check(oldpad, SCE_CTRL_CROSS) then 
+		JumpTo(0,0)
+		Update_XY()
+	end
 	if Controls.check(pad, SCE_CTRL_SELECT) then 
 		FTP = FTP + 1	
 	end
